@@ -110,7 +110,26 @@ test.describe("Movimiento", () => {
     await expect(page.locator("#visita .tile").first()).toHaveCSS("opacity", "1", { timeout: 4000 });
   });
 
-  test("carta de color se abre en abanico", async ({ page }) => {
+  test("en móvil la carta de color es una tira deslizable y legible", async ({ page }, ti) => {
+    test.skip(!isMobile(ti), "solo móvil");
+    await page.goto("/");
+    const fan = page.locator(".fan");
+    await fan.scrollIntoViewIfNeeded();
+    expect(await fan.evaluate((el) => getComputedStyle(el).overflowX)).toBe("auto");
+    expect(await fan.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+    // Ninguna tarjeta está girada: los nombres se leen
+    const rot = await page.locator(".sw").evaluateAll((els) => els.map((e) => getComputedStyle(e).transform));
+    rot.forEach((m) => expect(m === "none" || m === "matrix(1, 0, 0, 1, 0, 0)").toBe(true));
+  });
+
+  test("el nombre del pie se ve entero al llegar al final", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await expect.poll(() => page.locator(".ftr-mark span").evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m42), { timeout: 5000 }).toBeLessThan(2);
+  });
+
+  test("carta de color se abre en abanico", async ({ page }, ti) => {
+    test.skip(isMobile(ti), "en móvil no hay abanico");
     await page.goto("/");
     await page.waitForTimeout(800);
     await page.evaluate(() => window.scrollTo(0, document.querySelector(".fan").getBoundingClientRect().top + scrollY - innerHeight * 0.3));

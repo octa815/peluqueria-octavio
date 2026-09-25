@@ -6,13 +6,15 @@ import { RoomEnvironment } from "../vendor/RoomEnvironment.js";
 const MODEL_LEN = 4.75; // de la punta de las hojas al extremo de los aros, en unidades del modelo
 
 export function createScissors(canvas) {
+  // En móvil: menos píxeles, sin antialias y materiales más baratos (la pantalla ya es muy densa)
+  const coarse = matchMedia("(pointer: coarse)").matches;
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !coarse, powerPreference: "high-performance" });
   } catch {
     return null; // sin WebGL: la web funciona igual, solo sin tijeras
   }
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.25 : 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -34,10 +36,15 @@ export function createScissors(canvas) {
   scene.add(rim);
 
   /* ---------- Materiales ---------- */
-  const steel = new THREE.MeshPhysicalMaterial({ color: 0xe4e7eb, metalness: 1, roughness: 0.16, clearcoat: 0.4, clearcoatRoughness: 0.1 });
-  const edge = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 1, roughness: 0.05 });
-  const copper = new THREE.MeshPhysicalMaterial({ color: 0xb8683a, metalness: 0.9, roughness: 0.26, clearcoat: 0.7, clearcoatRoughness: 0.18 });
-  const dark = new THREE.MeshPhysicalMaterial({ color: 0x241d1a, metalness: 0.8, roughness: 0.3, clearcoat: 1 });
+  const M = (opts) => {
+    if (!coarse) return new THREE.MeshPhysicalMaterial(opts);
+    const { clearcoat, clearcoatRoughness, ...rest } = opts;
+    return new THREE.MeshStandardMaterial(rest);
+  };
+  const steel = M({ color: 0xe4e7eb, metalness: 1, roughness: 0.16, clearcoat: 0.4, clearcoatRoughness: 0.1 });
+  const edge = M({ color: 0xffffff, metalness: 1, roughness: 0.05 });
+  const copper = M({ color: 0xb8683a, metalness: 0.9, roughness: 0.26, clearcoat: 0.7, clearcoatRoughness: 0.18 });
+  const dark = M({ color: 0x241d1a, metalness: 0.8, roughness: 0.3, clearcoat: 1 });
 
   /* ---------- Geometría ---------- */
   function bladeGeometry() {

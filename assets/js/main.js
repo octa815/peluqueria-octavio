@@ -165,13 +165,25 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") setMenu(fa
 
 /* ---------- Botón flotante: oculto sobre la portada y en Visítanos ---------- */
 const floatCall = $(".float-call");
-if (floatCall && "IntersectionObserver" in window) {
+// También se aparta mientras bajas leyendo, para no tapar nada, y vuelve al subir
+if (floatCall) {
   const visible = new Set();
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
-    floatCall.classList.toggle("is-hidden", visible.size > 0);
-  }, { threshold: 0.1 });
-  [$(".stage"), $("#visita")].filter(Boolean).forEach((el) => io.observe(el));
+  let goingDown = false, lastY = scrollY;
+  const paint = () => floatCall.classList.toggle("is-hidden", visible.size > 0 || goingDown);
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+      paint();
+    }, { threshold: 0.05 });
+    [$(".stage"), $("#visita"), $(".ftr")].filter(Boolean).forEach((el) => io.observe(el));
+  }
+  addEventListener("scroll", () => {
+    const y = scrollY;
+    if (Math.abs(y - lastY) < 8) return;
+    const down = y > lastY && y > 200;
+    lastY = y;
+    if (down !== goingDown) { goingDown = down; paint(); }
+  }, { passive: true });
 }
 
 /* =====================================================================
@@ -236,6 +248,8 @@ function splitWords(el) {
 
 function initMotion() {
   gsap.registerPlugin(ScrollTrigger);
+  // En móvil la barra de direcciones cambia la altura al hacer scroll: no recalcular por eso (evita saltos)
+  ScrollTrigger.config({ ignoreMobileResize: true });
   gsap.defaults({ ease: "expo.out", duration: 1.1 });
 
   /* ---------- Scroll suave ---------- */
@@ -364,7 +378,7 @@ function initMotion() {
       start: "top top",
       end: () => "+=" + vh() * 1.9,
       pin: true,
-      scrub: true,
+      scrub: 0.7,
       anticipatePin: 1,
       invalidateOnRefresh: true,
       onToggle: (self) => scShow("hero", self.isActive || self.progress === 0),
@@ -388,14 +402,13 @@ function initMotion() {
     const cutEl = $(".snip-cut", snip);
     const id = "snip" + i;
     const len = () => bigLen() * 0.62;
-    ScrollTrigger.create({
-      trigger: snip,
-      start: "top 88%",
-      end: "top 28%",
-      scrub: true,
-      onToggle: (self) => scShow(id, self.isActive),
-      onUpdate: (self) => {
-        const p = self.progress;
+    const st = { p: 0 };
+    gsap.to(st, {
+      p: 1, ease: "none",
+      scrollTrigger: { trigger: snip, start: "top 88%", end: "top 28%", scrub: 0.6 },
+      onUpdate: () => {
+        const p = st.p;
+        scShow(id, p > 0.002 && p < 0.998);
         const W = vw();
         const L = len();
         const x = lerp(-L * 0.7, W + L * 0.8, p);
@@ -490,7 +503,7 @@ function initMotion() {
 
   /* ---------- Carta de color en abanico ---------- */
   const fan = $(".fan");
-  if (fan) {
+  if (fan && matchMedia("(min-width: 701px)").matches) {
     root.classList.add("fan-ready");
     const cards = $$(".sw", fan);
     const mid = (cards.length - 1) / 2;
@@ -514,9 +527,9 @@ function initMotion() {
   /* ---------- Manifiesto: palabras que se encienden ---------- */
   $$("[data-words]").forEach((el) => {
     const words = splitWords(el);
-    gsap.fromTo(words, { opacity: 0.14 }, {
+    gsap.fromTo(words, { opacity: 0.22 }, {
       opacity: 1, ease: "none", stagger: 0.1,
-      scrollTrigger: { trigger: el, start: "top 80%", end: "bottom 45%", scrub: true },
+      scrollTrigger: { trigger: el, start: "top 85%", end: "bottom 70%", scrub: 0.4 },
     });
   });
 
@@ -530,7 +543,7 @@ function initMotion() {
   gsap.from(".tile", { y: 60, opacity: 0, duration: 1.2, stagger: 0.08, scrollTrigger: { trigger: ".bento", start: "top 85%", once: true } });
 
   /* ---------- Pie: la palabra sube ---------- */
-  gsap.from(".ftr-mark span", { yPercent: 100, ease: "none", scrollTrigger: { trigger: ".ftr", start: "top bottom", end: "top 30%", scrub: true } });
+  gsap.from(".ftr-mark span", { yPercent: 100, ease: "none", scrollTrigger: { trigger: ".ftr", start: "top bottom", end: "bottom bottom", scrub: true } });
 
   /* ---------- Barra de progreso, cabecera y menú activo ---------- */
   gsap.to(".progress", { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: true } });
