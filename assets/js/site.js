@@ -56,6 +56,7 @@
   const header = $(".site-header");
   const progress = $(".progress");
   const heroVisual = $(".hero-visual");
+  const sign = $(".am-sign");
   let ticking = false;
   function onScroll() {
     ticking = false;
@@ -66,6 +67,13 @@
     if (heroVisual && !reduceMotion.matches && y < innerHeight * 1.2) {
       heroVisual.style.setProperty("--py", `${(y * 0.12).toFixed(1)}px`);
     }
+    if (sign && !reduceMotion.matches) {
+      const r = sign.parentElement.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < innerHeight) {
+        const t = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; // -1…1
+        sign.style.setProperty("--sy", `${(t * 40).toFixed(1)}px`);
+      }
+    }
   }
   addEventListener("scroll", () => {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
@@ -74,14 +82,16 @@
 
   /* ---------- Apariciones al hacer scroll ---------- */
   const revealEls = $$("[data-reveal]");
-  if ("IntersectionObserver" in window && !reduceMotion.matches) {
+  if ("IntersectionObserver" in window) {
     // Escalonado entre hermanos que entran juntos
     const io = new IntersectionObserver((entries) => {
       const incoming = entries.filter((e) => e.isIntersecting).map((e) => e.target);
       incoming.forEach((el, i) => {
-        el.style.setProperty("--d", `${Math.min(i, 6) * 70}ms`);
-        el.classList.add("is-in");
+        el.style.setProperty("--d", `${Math.min(i, 6) * 60}ms`);
+        el.classList.add("is-revealing", "is-in");
         io.unobserve(el);
+        // Al terminar, se quita la transición de entrada: el hover no hereda el retraso
+        setTimeout(() => { el.classList.remove("is-revealing"); el.style.removeProperty("--d"); }, 1200);
       });
     }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
     revealEls.forEach((el) => io.observe(el));
@@ -142,6 +152,7 @@
     3: [[540, 780], [900, 1200]],
     4: [[540, 780], [900, 1200]],
     5: [[540, 780], [900, 1200]],
+    6: [[480, 840]],
   };
   const DAY_NAMES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
   const fmt = (m) => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, "0")}`;
@@ -185,6 +196,56 @@
   }
   paintStatus();
   setInterval(paintStatus, 60_000);
+
+  /* ---------- Visor de trabajos ---------- */
+  const lb = $(".lightbox");
+  const works = $$(".work-btn");
+  if (lb && works.length && typeof lb.showModal === "function") {
+    const lbImg = $("img", lb);
+    const lbCap = $("figcaption", lb);
+    let idx = 0;
+    let opener = null;
+
+    function show(i) {
+      idx = (i + works.length) % works.length;
+      const btn = works[idx];
+      const thumb = $("img", btn);
+      lbImg.classList.add("is-loading");
+      lbImg.alt = thumb.alt;
+      lbImg.src = btn.dataset.full;
+      lbCap.textContent = `${thumb.alt} · ${idx + 1}/${works.length}`;
+    }
+    lbImg.addEventListener("load", () => lbImg.classList.remove("is-loading"));
+
+    works.forEach((btn, i) => btn.addEventListener("click", () => {
+      opener = btn;
+      show(i);
+      lb.showModal();
+      document.body.style.overflow = "hidden";
+    }));
+    $(".lb-prev", lb).addEventListener("click", () => show(idx - 1));
+    $(".lb-next", lb).addEventListener("click", () => show(idx + 1));
+    $(".lb-close", lb).addEventListener("click", () => lb.close());
+    lb.addEventListener("click", (e) => { if (e.target === lb || e.target.tagName === "FIGURE") lb.close(); });
+    lb.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") show(idx - 1);
+      if (e.key === "ArrowRight") show(idx + 1);
+    });
+    lb.addEventListener("close", () => {
+      document.body.style.overflow = "";
+      opener?.focus({ preventScroll: true });
+    });
+
+    // Deslizar en móvil
+    let x0 = null;
+    lb.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener("touchend", (e) => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) show(idx + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+  }
 
   /* ---------- Año ---------- */
   $$("[data-year]").forEach((el) => (el.textContent = new Date().getFullYear()));

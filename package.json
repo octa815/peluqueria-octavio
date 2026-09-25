@@ -1,0 +1,12 @@
+{
+  "name": "peluqueria-octavio",
+  "private": true,
+  "description": "Web de Peluquería Octavio (Elda). Sitio estático; package.json solo para las pruebas.",
+  "scripts": {
+    "serve": "python3 -m http.server 8080",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}
