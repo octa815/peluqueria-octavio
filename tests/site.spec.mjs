@@ -61,11 +61,23 @@ test.describe("Portada y contenido", () => {
     for (const s of srcs) expect((await request.get("/" + s)).status(), s).toBe(200);
   });
 
-  test("enlaces de llamada apuntan al teléfono", async ({ page }) => {
+  test("enlaces de llamada y WhatsApp apuntan al teléfono", async ({ page }) => {
     await page.goto("/");
-    const hrefs = await page.locator('a[href^="tel:"]').evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    expect(hrefs.length).toBeGreaterThanOrEqual(4);
-    for (const h of hrefs) expect(h).toBe("tel:+34965381889");
+    const tel = await page.locator('a[href^="tel:"]').evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(tel.length).toBeGreaterThanOrEqual(2);
+    for (const h of tel) expect(h).toBe("tel:+34625263146");
+    const wa = await page.locator('a[href*="wa.me"]').evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    expect(wa.length).toBeGreaterThanOrEqual(3);
+    for (const h of wa) expect(h).toMatch(/^https:\/\/wa\.me\/34625263146(\?|$)/);
+  });
+
+  test("botón de WhatsApp siempre visible", async ({ page }) => {
+    await page.goto("/");
+    const btn = page.locator(".float-call");
+    await expect(btn).toBeVisible();
+    await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(600);
+    await expect(btn).toBeVisible();
   });
 
   test("sin scroll horizontal", async ({ page }) => {

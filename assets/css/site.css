@@ -22,6 +22,11 @@
   --accent-2: #c7652f;
   --accent-ink: #ffffff;
   --accent-soft: rgba(162, 72, 31, 0.1);
+  --wa: #0f7a3e;
+  --wa-2: #0b6433;
+  --wa-soft: rgba(15, 122, 62, 0.1);
+  --wa-ink: #0f6b37;
+  --leaf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20 3C9 3 4 9 4 16c0 1.7.4 3.2 1 4.5l1.6-1.3C8 13 12 10 17 8c-4 2.5-7 6-8.3 10.6C16 20 21 14 20 3Z'/%3E%3C/svg%3E");
   --under-bg: #161311;
   --under-ink: #f3eee6;
   --ok: #1f7a4d;
@@ -51,6 +56,8 @@
 }
 
 :root[data-theme="dark"] {
+  --wa-soft: rgba(90, 200, 130, 0.14);
+  --wa-ink: #7ed6a0;
   --paper: #121010;
   --paper-2: #1b1817;
   --paper-3: #292321;
@@ -268,6 +275,7 @@ em { font-family: var(--serif); font-style: italic; }
 .under-title em { color: var(--accent-2); }
 :root[data-theme="dark"] .under-title em { color: #a2481f; }
 .under-sub { max-width: 30em; opacity: 0.75; font-size: clamp(1rem, 1.4vw, 1.15rem); }
+.under-sub strong { font-weight: 700; opacity: 1; }
 
 .half { position: absolute; inset: 0; background: var(--paper); }
 html.cut-ready .half-top { clip-path: inset(0 0 50% 0); }
@@ -306,7 +314,14 @@ html.cut-ready .half-bot { display: block; }
 }
 .hero-where { font-size: 0.82rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
 .hero-claim { text-align: center; font-family: var(--serif); font-size: clamp(1.2rem, 1.9vw, 1.6rem); line-height: 1.15; }
-.hero-cta { justify-self: end; }
+.hero-where { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 12px; border-radius: 999px;
+  background: var(--wa-soft); color: var(--wa-ink);
+  letter-spacing: 0.06em;
+}
+.hero-badge::before { content: ""; width: 12px; height: 12px; flex: none; background: currentColor; -webkit-mask: var(--leaf) center / contain no-repeat; mask: var(--leaf) center / contain no-repeat; }
 
 .status, [data-status] { display: inline-flex; align-items: center; gap: 8px; }
 .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); flex: none; }
@@ -355,6 +370,14 @@ html.cut-ready .half-bot { display: block; }
 .sec-head-center .lede { margin-inline: auto; }
 
 /* Servicios */
+.svc-end {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px;
+  margin-top: clamp(32px, 5vw, 56px);
+}
+.svc-end p { font-family: var(--serif); font-size: clamp(1.5rem, 3vw, 2.4rem); line-height: 1.1; max-width: 22em; }
+.svc-end em { color: var(--accent); }
+.pill-wa { background: var(--wa); color: #fff; }
+.pill-wa:hover { background: var(--wa-2); color: #fff; }
 .svc-list { list-style: none; padding: 0; border-top: 1px solid var(--line); }
 .svc {
   display: grid; grid-template-columns: 70px minmax(0, 1.2fr) minmax(0, 1fr);
@@ -506,7 +529,7 @@ html.fan-ready .sw {
 .bento {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 0.8fr);
-  grid-template-areas: "hours call call" "hours map fb";
+  grid-template-areas: "hours call call" "hours map ig";
   gap: clamp(12px, 1.6vw, 20px);
 }
 .tile {
@@ -537,9 +560,9 @@ html.fan-ready .sw {
 .tile-call:hover { background: var(--accent-2); }
 .tile-call .tile-big { font-size: clamp(2.8rem, 7vw, 6.4rem); }
 .tile-map { grid-area: map; }
-.tile-fb { grid-area: fb; background: var(--ink); color: var(--paper); border-color: transparent; }
-.tile-fb .tile-label, .tile-fb .tile-note { color: inherit; opacity: 0.7; }
-.tile-fb .tile-big { font-size: clamp(2.2rem, 3.6vw, 3.4rem); }
+.tile-ig { grid-area: ig; background: var(--ink); color: var(--paper); border-color: transparent; }
+.tile-ig .tile-label, .tile-ig .tile-note { color: inherit; opacity: 0.7; }
+.tile-ig .tile-big { font-size: clamp(2.2rem, 3.6vw, 3.4rem); }
 
 .now { padding: 8px 14px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); font-weight: 600; font-size: 0.92rem; justify-self: start; }
 .hours { width: 100%; border-collapse: collapse; margin-top: 6px; }
@@ -572,7 +595,7 @@ html.fan-ready .sw {
 .tile-links a { color: var(--ink); text-underline-offset: 3px; }
 
 /* ---------- Pie ---------- */
-.ftr { padding-block: clamp(60px, 8vw, 100px) calc(28px + env(safe-area-inset-bottom, 0px)); overflow: hidden; border-top: 1px solid var(--line); }
+.ftr { padding-block: clamp(60px, 8vw, 100px) calc(96px + env(safe-area-inset-bottom, 0px)); overflow: hidden; border-top: 1px solid var(--line); }
 .ftr-mark {
   font-family: var(--serif); font-style: italic;
   font-size: clamp(5rem, 25vw, 24rem); line-height: 0.8; letter-spacing: -0.03em;
@@ -591,19 +614,20 @@ html.fan-ready .sw {
 .ftr-legal a, .ftr-row > p > a { display: inline-flex; align-items: center; min-height: 40px; }
 .ftr-legal a:hover { color: var(--accent); }
 
-/* ---------- Botón flotante (móvil) ---------- */
+/* ---------- Botón flotante de WhatsApp (siempre visible) ---------- */
 .float-call {
   position: fixed; z-index: 95;
   right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  display: none; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: 8px;
   padding: 14px 20px; border-radius: 999px;
-  background: var(--accent); color: var(--accent-ink);
+  background: var(--wa); color: #fff;
   font-weight: 700; text-decoration: none;
   box-shadow: 0 12px 30px -8px rgba(0,0,0,0.4);
   transition: transform 400ms var(--ease-out), opacity var(--dur-ui) ease;
 }
 .float-call svg { width: 18px; height: 18px; fill: currentColor; }
-.float-call.is-hidden { transform: translateY(150%); opacity: 0; pointer-events: none; }
+.float-call:hover { background: var(--wa-2); transform: translateY(-2px); }
+.float-call svg { width: 20px; height: 20px; }
 
 /* ---------- Visor ---------- */
 .lightbox {
@@ -680,7 +704,7 @@ html.fan-ready .sw {
   .salon-copy { grid-column: 1 / -1; order: -1; }
   .sp-b { margin-top: 40%; }
 
-  .bento { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "call call" "hours map" "hours fb"; }
+  .bento { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "call call" "hours map" "hours ig"; }
 }
 
 @media (max-width: 700px) {
@@ -718,10 +742,9 @@ html.fan-ready .sw {
   .salon-grid { grid-template-columns: minmax(0, 1fr); }
   .sp-b { margin-top: 0; width: 72%; justify-self: end; margin-top: -18%; position: relative; z-index: 1; border: 5px solid var(--paper); }
 
-  .bento { grid-template-columns: minmax(0, 1fr); grid-template-areas: "call" "hours" "map" "fb"; }
+  .bento { grid-template-columns: minmax(0, 1fr); grid-template-areas: "call" "hours" "map" "ig"; }
   .hours td { font-size: 0.8rem; }
   .hours th { font-size: 1.12rem; }
-  .float-call { display: inline-flex; }
   .ftr { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   .ftr-row { flex-direction: column; }
 }

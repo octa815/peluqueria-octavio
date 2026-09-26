@@ -60,5 +60,5 @@ En `aviso-legal.html` y `privacidad.html` hay tres datos marcados en amarillo qu
 ## Cambios habituales
 
 - **Horario**: la tabla de `#visita` en `index.html`, el objeto `HOURS` en `assets/js/main.js` y el bloque JSON-LD del `<head>`.
-- **Teléfono**: busca `965381889` y `965 381 889`.
+- **Teléfono**: busca `625263146` y `625 263 146`.
 - **Fotos**: añade WebP de 600 y 1200 px en `assets/img/` y un `<li class="work">` en `#trabajos`.

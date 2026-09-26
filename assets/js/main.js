@@ -163,29 +163,6 @@ function setMenu(open) {
 menuBtn?.addEventListener("click", () => setMenu(!nav.classList.contains("is-open")));
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") setMenu(false); });
 
-/* ---------- Botón flotante: oculto sobre la portada y en Visítanos ---------- */
-const floatCall = $(".float-call");
-// También se aparta mientras bajas leyendo, para no tapar nada, y vuelve al subir
-if (floatCall) {
-  const visible = new Set();
-  let goingDown = false, lastY = scrollY;
-  const paint = () => floatCall.classList.toggle("is-hidden", visible.size > 0 || goingDown);
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
-      paint();
-    }, { threshold: 0.05 });
-    [$(".stage"), $("#visita"), $(".ftr")].filter(Boolean).forEach((el) => io.observe(el));
-  }
-  addEventListener("scroll", () => {
-    const y = scrollY;
-    if (Math.abs(y - lastY) < 8) return;
-    const down = y > lastY && y > 200;
-    lastY = y;
-    if (down !== goingDown) { goingDown = down; paint(); }
-  }, { passive: true });
-}
-
 /* =====================================================================
    Movimiento (GSAP)
    ===================================================================== */
