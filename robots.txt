@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://peluqueriaoctavio.netlify.app/sitemap.xml
