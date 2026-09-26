@@ -617,17 +617,16 @@ html.fan-ready .sw {
 /* ---------- Botón flotante de WhatsApp (siempre visible) ---------- */
 .float-call {
   position: fixed; z-index: 95;
-  right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 14px 20px; border-radius: 999px;
-  background: var(--wa); color: #fff;
-  font-weight: 700; text-decoration: none;
-  box-shadow: 0 12px 30px -8px rgba(0,0,0,0.4);
-  transition: transform 400ms var(--ease-out), opacity var(--dur-ui) ease;
+  right: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: grid; place-items: center;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: #25d366; color: #fff;
+  box-shadow: 0 10px 28px -6px rgba(0,0,0,0.35);
+  transition: transform 300ms var(--ease-out), background-color var(--dur-ui) ease;
 }
-.float-call svg { width: 18px; height: 18px; fill: currentColor; }
-.float-call:hover { background: var(--wa-2); transform: translateY(-2px); }
-.float-call svg { width: 20px; height: 20px; }
+.float-call svg { width: 34px; height: 34px; fill: currentColor; }
+.float-call:hover { background: #1ebe5a; transform: scale(1.06); }
+.float-call:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 
 /* ---------- Visor ---------- */
 .lightbox {
