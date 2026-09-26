@@ -181,14 +181,14 @@ test.describe("Interacción", () => {
     await expect(map.locator("iframe")).toHaveAttribute("src", /google\.com\/maps/);
   });
 
-  test("tema oscuro: cambia y se recuerda", async ({ page }) => {
+  test("tema: negro por defecto, cambia a blanco y se recuerda", async ({ page }) => {
     await page.emulateMedia({ colorScheme: "light" });
     await page.goto("/");
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await page.locator(".theme-toggle").click();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.reload();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   });
 
   test("menú móvil a pantalla completa, abre y cierra", async ({ page }, testInfo) => {

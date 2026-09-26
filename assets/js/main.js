@@ -22,7 +22,7 @@ const themeMeta = $('meta[name="theme-color"]');
 function syncTheme() {
   const dark = root.dataset.theme === "dark";
   $$(".theme-toggle").forEach((b) => b.setAttribute("aria-label", dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"));
-  if (themeMeta) themeMeta.content = dark ? "#121010" : "#f3eee6";
+  if (themeMeta) themeMeta.content = dark ? "#0a0a0a" : "#ffffff";
 }
 syncTheme();
 $$(".theme-toggle").forEach((btn) => btn.addEventListener("click", () => {
@@ -32,9 +32,6 @@ $$(".theme-toggle").forEach((btn) => btn.addEventListener("click", () => {
   if (document.startViewTransition && !reduce) document.startViewTransition(apply);
   else apply();
 }));
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-  if (!store.get("theme")) { root.dataset.theme = e.matches ? "dark" : "light"; syncTheme(); }
-});
 
 /* ---------- Año ---------- */
 $$("[data-year]").forEach((el) => (el.textContent = new Date().getFullYear()));

@@ -31,7 +31,7 @@ export function createScissors(canvas) {
   const key = new THREE.DirectionalLight(0xffffff, 1.6);
   key.position.set(3, 6, 8);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0xffd2b0, 0.8);
+  const rim = new THREE.DirectionalLight(0xffffff, 0.8);
   rim.position.set(-6, -2, 3);
   scene.add(rim);
 
@@ -43,8 +43,8 @@ export function createScissors(canvas) {
   };
   const steel = M({ color: 0xe4e7eb, metalness: 1, roughness: 0.16, clearcoat: 0.4, clearcoatRoughness: 0.1 });
   const edge = M({ color: 0xffffff, metalness: 1, roughness: 0.05 });
-  const copper = M({ color: 0xb8683a, metalness: 0.9, roughness: 0.26, clearcoat: 0.7, clearcoatRoughness: 0.18 });
-  const dark = M({ color: 0x241d1a, metalness: 0.8, roughness: 0.3, clearcoat: 1 });
+  const copper = M({ color: 0x5a5a5e, metalness: 0.9, roughness: 0.24, clearcoat: 0.8, clearcoatRoughness: 0.15 });
+  const dark = M({ color: 0x141414, metalness: 0.8, roughness: 0.3, clearcoat: 1 });
 
   /* ---------- Geometría ---------- */
   function bladeGeometry() {

@@ -5,7 +5,7 @@
   const sync = () => {
     const dark = root.dataset.theme === "dark";
     document.querySelectorAll(".theme-toggle").forEach((b) => b.setAttribute("aria-label", dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"));
-    if (meta) meta.content = dark ? "#121010" : "#f3eee6";
+    if (meta) meta.content = dark ? "#0a0a0a" : "#ffffff";
   };
   sync();
   document.querySelectorAll(".theme-toggle").forEach((b) => b.addEventListener("click", () => {
